@@ -2,5 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="src" path="/vs.rmi.interfaces"/>
+	<classpathentry exported="true" kind="src" path="/vt-display"/>
+	<classpathentry kind="src" path="/vt_fernseher"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/vs.rmi.registry"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
