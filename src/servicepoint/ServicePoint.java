@@ -10,14 +10,21 @@ import org.htw.fiw.vs.IBinder;
 import org.htw.fiw.vs.fernseher.IDisplayRemote;
 import org.htw.fiw.vs.fernseher.IFernseherRemote;
 import org.htw.fiw.vs.fernseher.IServicePoint;
+import org.htw.fiw.vs.heartbeat.IPlayer;
+
+
+
 
 public class ServicePoint extends UnicastRemoteObject implements Runnable,IServicePoint{
 
-	private IDisplayRemote displayRemote;
+
+ IDisplayRemote displayRemote;
 	private IBinder binder;
-	private boolean status;
+    boolean status;
 	private static int observerIDTracker = 0;
 	private int observerID;
+	private String number;
+	IPlayer player;
 
 
 
@@ -25,14 +32,14 @@ public class ServicePoint extends UnicastRemoteObject implements Runnable,IServi
 	public ServicePoint(IBinder binder)  throws RemoteException{
 		//super();
 		try {
-			//System.setProperty("java.rmi.server.hostname","141.45.208.250");
+			//System.setProperty("java.rmi.server.hostname","141.45.204.2");
 			displayRemote = (IDisplayRemote) binder.lookup("Display");
 			this.binder = binder;
 			//this.displayRemote = displayRemote;
 			this.observerID = ++observerIDTracker;
 			System.out.println("New Observer " + this.observerID);
-      
-			displayRemote.register(this);
+         
+			this.displayRemote.register(this);
 
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -41,7 +48,7 @@ public class ServicePoint extends UnicastRemoteObject implements Runnable,IServi
 	}
 
 	public static void main(String[] args) {
-
+		
 		if(args.length == 2){
 			String ip = args[0];
 			int port = Integer.parseInt(args[1]);
@@ -49,13 +56,13 @@ public class ServicePoint extends UnicastRemoteObject implements Runnable,IServi
 			String url = protokoll + ip + ":" + port + "/binder";
 			System.out.println("ServicePoint gestartet");
 			try{
-				
+				//System.setProperty("java.rmi.server.hostname", "141.45.251.135");
 				IBinder binder = (IBinder) Naming.lookup(url);
 				ServicePoint servicepoint = new ServicePoint(binder);
 				Thread thread = new Thread(servicepoint);
 				thread.start();
-				for (String service : binder.list()) {
-					System.out.println(service);
+				for (String object : binder.list()) {
+					System.out.println(object);
 				}
 				System.out.println("SevicePoint laeuft...");
 
@@ -100,10 +107,22 @@ public class ServicePoint extends UnicastRemoteObject implements Runnable,IServi
 				for (String service : binder.list()) {
 					if(service.contains("Fernseher")){
 						IFernseherRemote fernseherRemote = (IFernseherRemote) binder.lookup(service);
-						if(fernseherRemote.getStatus() == false){
-							fernseherRemote.turnOff();
-						} else {
+						if(service.contains("team3/PlayerService")) {
+						player = (IPlayer) binder.lookup(service);
+						System.out.println(service);
+						}
+						if (status){
+							
 							fernseherRemote.turnOn();
+							
+						
+						
+						
+						
+							
+						} else {
+							fernseherRemote.turnOff();
+							
 						}
 
 					}
@@ -123,6 +142,13 @@ public class ServicePoint extends UnicastRemoteObject implements Runnable,IServi
 
 		
 	}
+
+	@Override
+	public void update(String number) throws RemoteException {
+		this.number=number;
+	}
+
+	
 
 	
 	}
